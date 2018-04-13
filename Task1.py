@@ -17,3 +17,5 @@ while user != ["end"]:
 
 for i in range(len(arr)):
     print(arr[i].literals)
+
+

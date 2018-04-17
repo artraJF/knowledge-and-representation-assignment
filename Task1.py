@@ -38,7 +38,7 @@ def backchain(KnBs, q):
             if len(q) > 1:
                 check = True
                 for i in range(len(q)):
-                    if not backchain(KnBs, q):
+                    if not backchain(KnBs, [q[i]]):
                         check = False
                 if not check:
                     return False
@@ -53,7 +53,6 @@ def backchain(KnBs, q):
                     return False
 
 
-'''
 KB = KnowledgeBase()
 user = ""
 while user != ["end"]:
@@ -61,18 +60,29 @@ while user != ["end"]:
     if user == ["end"]:
         break
     KB.add(user)
-query = raw_input("Enter your negated (!) query\n")
-'''
+query = [raw_input("Enter your negated (!) query\n")]
+temp = query
+res = backchain(KB, query)
+if res:
+    print("KB |= %s" % temp)
+elif not res:
+    print("KB does not |= %s" % temp)
 
-# First test worked, more testing required
+
+'''
+# Testing worked
 KB = KnowledgeBase()
-KB.add(['!fly', '!cheep', 'frog'])
-KB.add(['!croak', '!jump', 'bird'])
-KB.add(['!green', 'bird'])
-KB.add(['!blue', 'frog'])
-query = ['!']
+KB.add(['FirstGrade'])
+KB.add(['!FirstGrade', 'Child'])
+KB.add(['!Child', '!Male', 'Boy'])
+KB.add(['!Kindergarten', 'Child'])
+KB.add(['!Child', '!Female', 'Girl'])
+KB.add(['Female'])
+KB.add(['Male'])
+query = ['!Boy']
 test = backchain(KB, query)
 if test:
     print("Yay")
 elif not test:
     print("Boo")
+'''

@@ -39,22 +39,14 @@ def backchain(KnBs, q):
         elif check:
             # If the clause found has more than one literal, queries each literal to see if all are true
             # If all are true, returns true, else returns false
-            if len(q) > 1:
-                check = True
-                for i in range(len(q)):
-                    if not backchain(KnBs, [q[i]]):
-                        check = False
-                if not check:
-                    return False
-                elif check:
-                    return True
-            # If one literal was found, the new query is that literal
-            else:
-                temp = backchain(KnBs, q)
-                if temp:
-                    return True
-                elif not temp:
-                    return False
+            check = True
+            for i in range(len(q)):
+                if not backchain(KnBs, [q[i]]):
+                    check = False
+            if not check:
+                return False
+            elif check:
+                return True
 
 
 KB = KnowledgeBase()

@@ -13,6 +13,8 @@ class KnowledgeBase:
             print(i)
 
 
+# Limitation: could only accept a query with one literal
+'''
 def backchain(KnBs, q):
     # Once query is empty then the query is true
     if len(q) == 0:
@@ -47,6 +49,44 @@ def backchain(KnBs, q):
                 return False
             elif check:
                 return True
+'''
+
+
+# Using same algorithm as before to accept more than 1 literal
+def backchain(KB, q):
+    if len(q) == 0:
+        return True
+    else:
+        check = False
+        if len(q) == 1:
+            if "!" in q[0]:
+                q[0] = q[0].replace("!", "")
+            else:
+                q[0] = "!" + q[0]
+            for i in KB.clauses:
+                if q[0] in i:
+                    print("Found %s in %s" % (q, i))
+                    i.remove(q[0])
+                    q = i
+                    check = True
+                    break
+            if not check:
+                return False
+            elif check:
+                if backchain(KB, q):
+                    return True
+                elif not backchain(KB, q):
+                    return False
+        else:
+            check = True
+            for i in range(len(q)):
+                if not backchain(KB,[q[i]]):
+                    check = False
+                    break
+            if check:
+                return True
+            elif not check:
+                return False
 
 
 KB = KnowledgeBase()
@@ -60,7 +100,7 @@ while user != ["end"]:
 # Variable tat stores user input
 query = [raw_input("Enter your negated (!) query\n")]
 # Temporary storage for output
-temp = query[0]
+temp = query
 res = backchain(KB, query)
 if res:
     print("SOLVED \nKB |= %s" % temp)
@@ -78,8 +118,8 @@ KB.add(['!Kindergarten', 'Child'])
 KB.add(['!Child', '!Female', 'Girl'])
 KB.add(['Female'])
 KB.add(['Male'])
-query = ['!Boy']
-store = query[0]
+query = ['!Boy', '!Girl']
+store = query
 test = backchain(KB, query)
 if test:
     print("SOLVED \nKB |= %s" % store)

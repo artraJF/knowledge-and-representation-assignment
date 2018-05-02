@@ -87,6 +87,14 @@ class InherNet:
                 else:
                     print(arr[i][j].supcon),
 
+    # Method that determines shortest path
+    def _shortpath(self, arr):
+        tmparr = arr[0]
+        for i in range(1,len(arr)):
+            if len(arr[i]) < len(tmparr):
+                tmparr = arr[i]
+        return tmparr
+
     # Method that simplifies input
     def buildpaths(self, q):
         temparr = []
@@ -95,6 +103,8 @@ class InherNet:
         self._polpaths(temparr)
         print("All paths: \n")
         self._dispaths(temparr)
+        print("\nShortest path: \n")
+        self._dispaths([self._shortpath(temparr)])
 
 
 '''

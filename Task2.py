@@ -103,10 +103,18 @@ class InherNet:
     # Method that determines shortest path
     def _shortpath(self, arr):
         tmparr = arr[0]
+        retarr = []
         for i in range(1,len(arr)):
             if len(arr[i]) < len(tmparr):
                 tmparr = arr[i]
-        return tmparr
+        retarr.append(tmparr)
+        for i in range(len(arr)):
+            if len(arr[i]) == len(tmparr) and arr[i] != tmparr:
+                retarr.append(arr[i])
+        return retarr
+
+    # Method that determines the inferential path
+
 
     # Method that simplifies input
     def buildpaths(self, q):
@@ -118,7 +126,7 @@ class InherNet:
         print("All paths: \n")
         self._dispaths(temparr)
         print("\nShortest path: \n")
-        self._dispaths([self._shortpath(temparr)])
+        self._dispaths(self._shortpath(temparr))
 
 
 '''

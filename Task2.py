@@ -72,6 +72,19 @@ class InherNet:
                     temp.append(arr[i][x])
             arr[i] = temp
 
+    # Removes redundant paths
+    def _redunpaths(self, arr, goal):
+        tmparr = []
+        for i in range(len(arr)):
+            check = True
+            for j in range(len(arr[i])):
+                if arr[i][j].pol == False and arr[i][j].supcon != goal:
+                    check = False
+            if not check:
+                tmparr.append(arr[i])
+        for i in range(len(tmparr)):
+            arr.remove(tmparr[i])
+
     # Method that displays all paths neatly
     def _dispaths(self, arr):
         for i in range(len(arr)):
@@ -101,6 +114,7 @@ class InherNet:
         self._buildpaths(q.subcon, q.supcon, temparr)
         temparr = self._splitpaths(temparr, q.supcon)
         self._polpaths(temparr)
+        self._redunpaths(temparr, q.supcon)
         print("All paths: \n")
         self._dispaths(temparr)
         print("\nShortest path: \n")

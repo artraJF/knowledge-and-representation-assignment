@@ -1,10 +1,12 @@
 # private class for statements that accepts two stings and polarity
 class Statement:
+    # Method that initialises statement
     def __init__(self):
         self.subcon = ""
         self.supcon = ""
         self.pol = False
 
+    # Method creates a statement
     def create(self, inlist):
         self.subcon = inlist[0]
         self.supcon = inlist[2]
@@ -23,9 +25,11 @@ class Statement:
 
 # public class for inheritance network that stores a list of statements
 class InherNet:
+    # Initialises array
     def __init__(self):
         self.network = []
 
+    # Appends statements to the network
     def add(self, statement):
         temp = Statement()
         temp.create(statement)
@@ -36,10 +40,14 @@ class InherNet:
         for i in range(len(self.network)):
             self.network[i].display()
 
-    # Method that stores in a jumbled fashion, every correct path in an array
+    # Method that stores in, a jumbled fashion, every correct path in an array.
     def _buildpaths(self, q, goal, store):
+        # If the sub-concept is the same as the goal then the recursion stops.
         if q == goal:
             return
+        # Else searches the entire network for a matching sub-concept.
+        # Once found, appends statement to store, then searches again using the super-concept of the statement found
+        # as a query.
         else:
             for i in self.network:
                 if i.subcon == q:
@@ -48,6 +56,8 @@ class InherNet:
 
     # Method that separates paths into different arrays (2d)
     def _splitpaths(self, arr, goal):
+        # Searches the super-concepts within the array that match the goal.
+        # Once found, the array is split until every row within the 2d array has one super-concept = goal.
         temp2 = []
         x = 0
         for i in range(len(arr)):
@@ -61,6 +71,10 @@ class InherNet:
 
     # Method that polishes paths, builds them entirely
     def _polpaths(self, arr):
+        # Once paths are all split, makes sure that every path starts with the same sub-concept as the query.
+        # If not, then compares path with the longest most detailed path, and adds missing data from path.
+        # Limitation: assumes that the first element in the array is the longest most detailed path,
+        # may vary depending on how the input is entered.
         for i in range(1, len(arr)):
             j = 0
             temp = []
@@ -74,6 +88,8 @@ class InherNet:
 
     # Removes redundant paths
     def _redunpaths(self, arr, goal):
+        # Searches the array for polarities that are false.
+        # If a false polarity is found and the super-concept is not equal to the goal, then the entire path is removed.
         tmparr = []
         for i in range(len(arr)):
             check = True
@@ -86,7 +102,9 @@ class InherNet:
             arr.remove(tmparr[i])
 
     # Method that displays all paths neatly
-    def _dispaths(self, arr):
+    def _dispaths(self, arr, goal):
+        # Goes through entire array. If it is the first element of the path, the sub-concept is the displayed, as well
+        # as the polarity and super-concept. Else, only the polarity and super-concept are displayed.
         for i in range(len(arr)):
             for j in range(len(arr[i])):
                 if j == 0:
@@ -95,13 +113,14 @@ class InherNet:
                     print("IS-A"),
                 elif not arr[i][j].pol:
                     print("IS-NOT-A"),
-                if arr[i][j].supcon == "Gray":
+                if arr[i][j].supcon == goal:
                     print(arr[i][j].supcon)
                 else:
                     print(arr[i][j].supcon),
 
     # Method that determines shortest path
     def _shortpath(self, arr):
+        # Goes through array of paths matching their sizes until the smallest length is found.
         tmparr = arr[0]
         retarr = []
         for i in range(1,len(arr)):
@@ -115,53 +134,66 @@ class InherNet:
 
     # Method that determines the inferential path
     def _inferpath(self, arr):
+        # First, the method searches for the longest path (the most detailed).
         tmparr = arr[0]
         for i in range(1,len(arr)):
             if len((arr[i])) > len(tmparr):
                 tmparr = arr[i]
         tmpvar = tmparr[len(tmparr)-1]
         retarr = []
+        # Once the longest path is found, the method grabs the last statement, and matches the polarity with the last
+        # statement of other paths. If a contradiction is found, then the path is appended to a return array.
+        # If no contradictions are found, then the method takes the longest path as the inferential path.
         for i in range(len(arr)):
             tmpvar2 = arr[i][len(arr[i])-1]
             if tmpvar.pol != tmpvar2.pol:
                 retarr.append(arr[i])
-        return retarr
+        if len(retarr) == 0:
+            retarr.append(tmparr)
+            return retarr
+        else:
+            return retarr
 
-    # Method that simplifies input
+    # Method that uses all previous private methods (starting with an '_') to simplify input.
     def buildpaths(self, q):
         temparr = []
         self._buildpaths(q.subcon, q.supcon, temparr)
         temparr = self._splitpaths(temparr, q.supcon)
         self._polpaths(temparr)
         self._redunpaths(temparr, q.supcon)
-        print("All paths: \n")
-        self._dispaths(temparr)
+        print("\nAll paths: \n")
+        self._dispaths(temparr, q.supcon)
         print("\nShortest paths: \n")
-        self._dispaths(self._shortpath(temparr))
+        self._dispaths(self._shortpath(temparr), q.supcon)
         print("\nInferential paths: \n")
-        self._dispaths(self._inferpath(temparr))
+        self._dispaths(self._inferpath(temparr), q.supcon)
 
 
-'''
-inher = InherNet()
+# Main method for user input
+IN = InherNet()
 user = ""
+print("Type end to close the inheritance network. Use space to separate every concept and use IS-A and IS-NOT-A (case "
+      "sensitive)\nInput example: Penguin IS-A Bird")
 while user != ["end"]:
     user = raw_input("Enter statement\n").split(" ")
     if user == ["end"]:
         break
-    inher.add(user)
-query = Statements()
-user = raw_input("Enter query").split(" ")
+    IN.add(user)
+query = Statement()
+user = raw_input("Enter query\n").split(" ")
 query.create(user)
-'''
+IN.buildpaths(query)
 
-inher = InherNet()
-inher.add(["Clyde", "IS-A", "FatRoyalElephant"])
-inher.add(["FatRoyalElephant", "IS-A", "RoyalElephant"])
-inher.add(["Clyde", "IS-A", "Elephant"])
-inher.add(["RoyalElephant", "IS-A", "Elephant"])
-inher.add(["RoyalElephant", "IS-NOT-A", "Gray"])
-inher.add(["Elephant", "IS-A", "Gray"])
+# Static values for testing
+'''
+IN = InherNet()
+IN.add(["Clyde", "IS-A", "FatRoyalElephant"])
+IN.add(["FatRoyalElephant", "IS-A", "RoyalElephant"])
+IN.add(["Clyde", "IS-A", "Elephant"])
+IN.add(["RoyalElephant", "IS-A", "Elephant"])
+IN.add(["RoyalElephant", "IS-NOT-A", "Gray"])
+IN.add(["Elephant", "IS-A", "Gray"])
 query = Statement()
 query.create(["Clyde", "IS-A", "Gray"])
-inher.buildpaths(query)
+IN.buildpaths(query)
+'''

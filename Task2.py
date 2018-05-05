@@ -69,22 +69,24 @@ class InherNet:
                 temp2.append(temp)
         return temp2
 
-    # Method that polishes paths, builds them entirely
-    def _polpaths(self, arr):
-        # Once paths are all split, makes sure that every path starts with the same sub-concept as the query.
-        # If not, then compares path with the longest most detailed path, and adds missing data from path.
-        # Limitation: assumes that the first element in the array is the longest most detailed path,
-        # may vary depending on how the input is entered.
-        for i in range(1, len(arr)):
-            j = 0
-            temp = []
-            if arr[0][0].subcon != arr[i][0]:
-                while arr[0][j].subcon != arr[i][0].subcon:
-                    temp.append(arr[0][j])
+    # Method that adds missing statements to paths
+    def _polpaths(self, arr, q):
+        # Goes through all paths until a pth that doesn't start with the query's sub-concept is found.
+        # Once found, adds the missing statements, taken from the last path that started with the sub-concept, and adds
+        # them to a temporary variable. The rest are added from the path with the missing statements and is then
+        # replaced with the temporary variable.
+        tmpvar = []
+        for i in range(len(arr)):
+            if arr[i][0].subcon == q:
+                tmpvar = arr[i]
+            else:
+                temp = []
+                j = 0
+                while tmpvar[j].subcon != arr[i][0].subcon:
+                    temp.append(tmpvar[j])
                     j = j+1
-                for x in range(len(arr[i])):
-                    temp.append(arr[i][x])
-            arr[i] = temp
+                temp = temp + arr[i]
+                arr[i] = temp
 
     # Removes redundant paths
     def _redunpaths(self, arr, goal):
@@ -159,7 +161,7 @@ class InherNet:
         temparr = []
         self._buildpaths(q.subcon, q.supcon, temparr)
         temparr = self._splitpaths(temparr, q.supcon)
-        self._polpaths(temparr)
+        self._polpaths(temparr, q.subcon)
         self._redunpaths(temparr, q.supcon)
         print("\nAll paths: \n")
         self._dispaths(temparr, q.supcon)

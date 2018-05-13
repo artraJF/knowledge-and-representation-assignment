@@ -5,3 +5,7 @@ To run, access directory from terminal and type:
 		python Task2.py
 
 Either python or python2.7 will work. 
+
+Github:
+
+https://github.com/Chaos-Sheeza/Knowledge-and-Representation-Assignment
